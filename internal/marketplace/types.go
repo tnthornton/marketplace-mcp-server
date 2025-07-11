@@ -35,50 +35,50 @@ type SearchResponse struct {
 
 // Package represents a package in search results
 type Package struct {
-	Account     string                 `json:"account"`
-	Repository  string                 `json:"repository"`
-	Name        string                 `json:"name"`
-	Version     string                 `json:"version,omitempty"`
-	Description string                 `json:"description,omitempty"`
-	Type        string                 `json:"type,omitempty"`
-	Public      bool                   `json:"public"`
-	Tier        string                 `json:"tier,omitempty"`
-	Stars       int                    `json:"stars,omitempty"`
-	Downloads   int                    `json:"downloads,omitempty"`
-	CreatedAt   time.Time              `json:"createdAt,omitempty"`
-	UpdatedAt   time.Time              `json:"updatedAt,omitempty"`
-	Tags        []string               `json:"tags,omitempty"`
-	Keywords    []string               `json:"keywords,omitempty"`
-	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+	Account     string         `json:"account"`
+	Repository  string         `json:"repository"`
+	Name        string         `json:"name"`
+	Version     string         `json:"version,omitempty"`
+	Description string         `json:"description,omitempty"`
+	Type        string         `json:"type,omitempty"`
+	Public      bool           `json:"public"`
+	Tier        string         `json:"tier,omitempty"`
+	Stars       int            `json:"stars,omitempty"`
+	Downloads   int            `json:"downloads,omitempty"`
+	CreatedAt   time.Time      `json:"createdAt,omitempty"`
+	UpdatedAt   time.Time      `json:"updatedAt,omitempty"`
+	Tags        []string       `json:"tags,omitempty"`
+	Keywords    []string       `json:"keywords,omitempty"`
+	Metadata    map[string]any `json:"metadata,omitempty"`
 }
 
 // PackageMetadata represents detailed package metadata
 type PackageMetadata struct {
-	Account       string                 `json:"account"`
-	Repository    string                 `json:"repository"`
-	Name          string                 `json:"name"`
-	Version       string                 `json:"version,omitempty"`
-	Description   string                 `json:"description,omitempty"`
-	Type          string                 `json:"type,omitempty"`
-	Public        bool                   `json:"public"`
-	Tier          string                 `json:"tier,omitempty"`
-	Stars         int                    `json:"stars,omitempty"`
-	Downloads     int                    `json:"downloads,omitempty"`
-	CreatedAt     time.Time              `json:"createdAt,omitempty"`
-	UpdatedAt     time.Time              `json:"updatedAt,omitempty"`
-	Tags          []string               `json:"tags,omitempty"`
-	Keywords      []string               `json:"keywords,omitempty"`
-	Versions      []string               `json:"versions,omitempty"`
-	LatestVersion string                 `json:"latestVersion,omitempty"`
-	Documentation string                 `json:"documentation,omitempty"`
-	Homepage      string                 `json:"homepage,omitempty"`
-	License       string                 `json:"license,omitempty"`
-	Dependencies  []Dependency           `json:"dependencies,omitempty"`
-	CRDs          []CRD                  `json:"crds,omitempty"`
-	Examples      []Example              `json:"examples,omitempty"`
-	Compositions  []Composition          `json:"compositions,omitempty"`
-	Functions     []Function             `json:"functions,omitempty"`
-	Metadata      map[string]interface{} `json:"metadata,omitempty"`
+	Account       string         `json:"account"`
+	Repository    string         `json:"repository"`
+	Name          string         `json:"name"`
+	Version       string         `json:"version,omitempty"`
+	Description   string         `json:"description,omitempty"`
+	Type          string         `json:"type,omitempty"`
+	Public        bool           `json:"public"`
+	Tier          string         `json:"tier,omitempty"`
+	Stars         int            `json:"stars,omitempty"`
+	Downloads     int            `json:"downloads,omitempty"`
+	CreatedAt     time.Time      `json:"createdAt,omitempty"`
+	UpdatedAt     time.Time      `json:"updatedAt,omitempty"`
+	Tags          []string       `json:"tags,omitempty"`
+	Keywords      []string       `json:"keywords,omitempty"`
+	Versions      []string       `json:"versions,omitempty"`
+	LatestVersion string         `json:"latestVersion,omitempty"`
+	Documentation string         `json:"documentation,omitempty"`
+	Homepage      string         `json:"homepage,omitempty"`
+	License       string         `json:"license,omitempty"`
+	Dependencies  []Dependency   `json:"dependencies,omitempty"`
+	CRDs          []CRD          `json:"crds,omitempty"`
+	Examples      []Example      `json:"examples,omitempty"`
+	Compositions  []Composition  `json:"compositions,omitempty"`
+	Functions     []Function     `json:"functions,omitempty"`
+	Metadata      map[string]any `json:"metadata,omitempty"`
 }
 
 // Dependency represents a package dependency
@@ -90,14 +90,14 @@ type Dependency struct {
 
 // CRD represents a Custom Resource Definition
 type CRD struct {
-	Name        string                 `json:"name"`
-	Group       string                 `json:"group"`
-	Version     string                 `json:"version"`
-	Kind        string                 `json:"kind"`
-	Plural      string                 `json:"plural"`
-	Singular    string                 `json:"singular"`
-	Description string                 `json:"description,omitempty"`
-	Schema      map[string]interface{} `json:"schema,omitempty"`
+	Name        string         `json:"name"`
+	Group       string         `json:"group"`
+	Version     string         `json:"version"`
+	Kind        string         `json:"kind"`
+	Plural      string         `json:"plural"`
+	Singular    string         `json:"singular"`
+	Description string         `json:"description,omitempty"`
+	Schema      map[string]any `json:"schema,omitempty"`
 }
 
 // Example represents a usage example
@@ -110,27 +110,27 @@ type Example struct {
 
 // Composition represents a Crossplane composition
 type Composition struct {
-	Name        string                 `json:"name"`
-	Description string                 `json:"description,omitempty"`
-	Content     string                 `json:"content"`
-	Resources   []CompositionResource  `json:"resources,omitempty"`
-	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+	Name        string                `json:"name"`
+	Description string                `json:"description,omitempty"`
+	Content     string                `json:"content"`
+	Resources   []CompositionResource `json:"resources,omitempty"`
+	Metadata    map[string]any        `json:"metadata,omitempty"`
 }
 
 // CompositionResource represents a resource in a composition
 type CompositionResource struct {
-	Name string                 `json:"name"`
-	Type string                 `json:"type"`
-	Base map[string]interface{} `json:"base,omitempty"`
+	Name string         `json:"name"`
+	Type string         `json:"type"`
+	Base map[string]any `json:"base,omitempty"`
 }
 
 // Function represents a Crossplane function
 type Function struct {
-	Name        string                 `json:"name"`
-	Description string                 `json:"description,omitempty"`
-	Version     string                 `json:"version"`
-	Image       string                 `json:"image"`
-	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+	Name        string         `json:"name"`
+	Description string         `json:"description,omitempty"`
+	Version     string         `json:"version"`
+	Image       string         `json:"image"`
+	Metadata    map[string]any `json:"metadata,omitempty"`
 }
 
 // AssetResponse represents the response from asset endpoints
@@ -174,4 +174,61 @@ type User struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Name     string `json:"name,omitempty"`
+}
+
+// PackageType enumerates the valid types of Crossplane packages.
+type PackageType string
+
+// CRDMeta contains CustomResourceDefinition metadata.
+type CRDMeta struct {
+	Group          string   `json:"group"`
+	Kind           string   `json:"kind"`
+	Versions       []string `json:"versions"`
+	StorageVersion string   `json:"storageVersion"`
+	Scope          string   `json:"scope"`
+}
+
+// XRDMeta contains CompositeResourceDefinition metadata.
+type XRDMeta struct {
+	Group                string   `json:"group"`
+	Kind                 string   `json:"kind"`
+	Versions             []string `json:"versions"`
+	ReferenceableVersion string   `json:"referenceableVersion"`
+}
+
+// CompositionMeta contains Composition metadata.
+type CompositionMeta struct {
+	Name          string `json:"name"`
+	ResourceCount int    `json:"resourceCount"`
+	XrdAPIVersion string `json:"xrdApiVersion"`
+	XrdKind       string `json:"xrdKind"`
+}
+
+// PackageMeta contains package metadata.
+type PackageMeta struct {
+	Account       string              `json:"account"`
+	Repository    string              `json:"repository"`
+	RepoKey       string              `json:"repoKey"`
+	Name          string              `json:"name"`
+	PackageType   PackageType         `json:"packageType"`
+	Public        bool                `json:"public"`
+	Tier          string              `json:"tier"`
+	PkgDigest     string              `json:"pkgDigest"`
+	FamilyRepoKey *string             `json:"familyRepoKey,omitempty"`
+	FamilyCount   *uint               `json:"familyCount,omitempty"`
+	Highlights    map[string][]string `json:"highlight,omitempty"`
+}
+
+// PackageResources contains extended package metadata that includes the
+// resources in the package.
+type PackageResources struct {
+	PackageMeta  `json:",inline"`
+	CRDs         []CRDMeta         `json:"customResourceDefinitions"`
+	XRDs         []XRDMeta         `json:"compositeResourceDefinitions"`
+	Compositions []CompositionMeta `json:"compositions"`
+}
+
+// Examples return type for multiple examples
+type Examples struct {
+	Examples []string `json:"examples"`
 }
