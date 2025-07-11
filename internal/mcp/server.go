@@ -202,6 +202,130 @@ func (s *Server) registerTools() {
 		},
 	}, s.handleGetRepositories)
 
+	// Get Package Version Resources tool
+	s.mcpServer.AddTool(mcp.Tool{
+		Name:        "get_package_version_resources",
+		Description: "Get package version resources for a supplied repository name.",
+		InputSchema: mcp.ToolInputSchema{
+			Type: "object",
+			Properties: map[string]any{
+				"account": map[string]any{
+					"type":        "string",
+					"description": "Account/organization name. For example upbound.",
+				},
+				"repository_name": map[string]any{
+					"type":        "string",
+					"description": "The name of the repository. For example provider-aws-s3.",
+				},
+				"version": map[string]any{
+					"type":        "string",
+					"description": "The version of the package. For example v1.23.1.",
+				},
+			},
+			Required: []string{"account", "respository_name", "version"},
+		},
+	}, s.handleGetPackagesAccountRepositoryVersionResources)
+
+	// Get Package Version Compositions Resources for Group & Kind tool
+	s.mcpServer.AddTool(mcp.Tool{
+		Name:        "get_package_version_composition_resources",
+		Description: "Get package version composition resources for a supplied group, kind and version and composition.",
+		InputSchema: mcp.ToolInputSchema{
+			Type: "object",
+			Properties: map[string]any{
+				"account": map[string]any{
+					"type":        "string",
+					"description": "Account/organization name. For example upbound.",
+				},
+				"repository_name": map[string]any{
+					"type":        "string",
+					"description": "The name of the repository. For example provider-aws-s3.",
+				},
+				"version": map[string]any{
+					"type":        "string",
+					"description": "The version of the package. For example v1.23.1.",
+				},
+				"resource_group": map[string]any{
+					"type":        "string",
+					"description": "The group of the resource. For example s3.aws.upbound.io.",
+				},
+				"resource_kind": map[string]any{
+					"type":        "string",
+					"description": "The kind of the resource. For example Bucket.",
+				},
+				"composition_name": map[string]any{
+					"type":        "string",
+					"description": "The version of the package.",
+				},
+			},
+			Required: []string{"account", "respository_name", "version", "resource_group", "resource_kind", "composition_name"},
+		},
+	}, s.handleGetPackagesAccountRepositoryVersionResourcesGroupKindComposition)
+
+	// Get Package Version Resources for Group & Kind tool
+	s.mcpServer.AddTool(mcp.Tool{
+		Name:        "get_package_version_groupkind_resources",
+		Description: "Get package version resources for a supplied group, kind and version.",
+		InputSchema: mcp.ToolInputSchema{
+			Type: "object",
+			Properties: map[string]any{
+				"account": map[string]any{
+					"type":        "string",
+					"description": "Account/organization name. For example upbound.",
+				},
+				"repository_name": map[string]any{
+					"type":        "string",
+					"description": "The name of the repository. For example provider-aws-s3.",
+				},
+				"version": map[string]any{
+					"type":        "string",
+					"description": "The version of the package. For example v1.23.1.",
+				},
+				"resource_group": map[string]any{
+					"type":        "string",
+					"description": "The group of the resource. For example s3.aws.upbound.io.",
+				},
+				"resource_kind": map[string]any{
+					"type":        "string",
+					"description": "The kind of the resource. For example Bucket.",
+				},
+			},
+			Required: []string{"account", "respository_name", "version", "resource_group", "resource_kind", "composition_name"},
+		},
+	}, s.handleGetPackagesAccountRepositoryVersionResourcesGroupKind)
+
+	// Get specific package examples for account / repo / version / group and kind.
+	s.mcpServer.AddTool(mcp.Tool{
+		Name:        "get_package_version_examples",
+		Description: "Get package version examples for a supplied group, kind and version.",
+		InputSchema: mcp.ToolInputSchema{
+			Type: "object",
+			Properties: map[string]any{
+				"account": map[string]any{
+					"type":        "string",
+					"description": "Account/organization name. For example upbound.",
+				},
+				"repository_name": map[string]any{
+					"type":        "string",
+					"description": "The name of the repository. For example provider-aws-s3.",
+				},
+				"version": map[string]any{
+					"type":        "string",
+					"description": "The version of the package. For example v1.23.1.",
+				},
+				"resource_group": map[string]any{
+					"type":        "string",
+					"description": "The group of the resource. For example s3.aws.upbound.io.",
+				},
+				"resource_kind": map[string]any{
+					"type":        "string",
+					"description": "The kind of the resource. For example Bucket.",
+				},
+			},
+			Required: []string{"account", "respository_name", "version", "resource_group", "resource_kind", "composition_name"},
+		},
+	}, s.handleGetPackagesAccountRepositoryVersionResourcesGroupKindExamples)
+
 	// Reload auth tool
 	s.mcpServer.AddTool(mcp.Tool{
 		Name:        "reload_auth",

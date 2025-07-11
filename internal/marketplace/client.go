@@ -327,3 +327,198 @@ func (c *Client) GetRepositories(ctx context.Context, account string, params Rep
 
 	return &repoResp, nil
 }
+
+// GetV1PackagesAccountRepositoryVersionResources - [/v1/packages/{account}/{repositoryName}/{version}/resources]
+func (c *Client) GetV1PackagesAccountRepositoryVersionResources(ctx context.Context, account, repositoryName, version string) (*PackageResources, error) {
+	endpoint := fmt.Sprintf("/v1/packages/%s/%s/%s/resources", account, repositoryName, version)
+
+	u, err := url.Parse(c.BaseURL + endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("User-Agent", UserAgent)
+	if c.Token != "" {
+		// Use session cookie authentication like UP CLI
+		req.AddCookie(&http.Cookie{
+			Name:  "SID",
+			Value: c.Token,
+		})
+	}
+
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
+		return nil, fmt.Errorf("authentication required for this endpoint")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
+	}
+
+	// Read the raw response.
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	var res PackageResources
+	if err := json.Unmarshal(body, &res); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return &res, nil
+}
+
+// GetV1PackagesAccountRepositoryVersionResourcesGroupKindComposition - [/v1/packages/{account}/{repositoryName}/{version}/resources/{resourceGroup}/{resourceKind}/compositions/{compositionName}]
+func (c *Client) GetV1PackagesAccountRepositoryVersionResourcesGroupKindComposition(ctx context.Context, account, repositoryName, version, resourceGroup, resourceKind, compositionName string) (string, error) {
+	endpoint := fmt.Sprintf("/v1/packages/%s/%s/%s/resources/%s/%s/compositions/%s", account, repositoryName, version, resourceGroup, resourceKind, compositionName)
+	u, err := url.Parse(c.BaseURL + endpoint)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("User-Agent", UserAgent)
+	if c.Token != "" {
+		// Use session cookie authentication like UP CLI
+		req.AddCookie(&http.Cookie{
+			Name:  "SID",
+			Value: c.Token,
+		})
+	}
+
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to execute request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
+		return "", fmt.Errorf("authentication required for this endpoint")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return "", fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
+	}
+
+	// Read the raw response.
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	return string(body), nil
+}
+
+// GetV1PackagesAccountRepositoryVersionResourcesGroupKind - [/v1/packages/{account}/{repositoryName}/{version}/resources/{resourceGroup}/{resourceKind}]
+func (c *Client) GetV1PackagesAccountRepositoryVersionResourcesGroupKind(ctx context.Context, account, repositoryName, version, resourceGroup, resourceKind string) (string, error) {
+	endpoint := fmt.Sprintf("/v1/packages/%s/%s/%s/resources/%s/%s", account, repositoryName, version, resourceGroup, resourceKind)
+	u, err := url.Parse(c.BaseURL + endpoint)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("User-Agent", UserAgent)
+	if c.Token != "" {
+		// Use session cookie authentication like UP CLI
+		req.AddCookie(&http.Cookie{
+			Name:  "SID",
+			Value: c.Token,
+		})
+	}
+
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to execute request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
+		return "", fmt.Errorf("authentication required for this endpoint")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return "", fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
+	}
+
+	// Read the raw response.
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	return string(body), nil
+}
+
+// GetV1PackagesAccountRepositoryVersionResourcesGroupKindExamples - [/v1/packages/{account}/{repositoryName}/{version}/resources/{resourceGroup}/{resourceKind}/examples]
+func (c *Client) GetV1PackagesAccountRepositoryVersionResourcesGroupKindExamples(ctx context.Context, account, repositoryName, version, resourceGroup, resourceKind string) (*Examples, error) {
+	endpoint := fmt.Sprintf("/v1/packages/%s/%s/%s/resources/%s/%s/examples", account, repositoryName, version, resourceGroup, resourceKind)
+	u, err := url.Parse(c.BaseURL + endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("User-Agent", UserAgent)
+	if c.Token != "" {
+		// Use session cookie authentication like UP CLI
+		req.AddCookie(&http.Cookie{
+			Name:  "SID",
+			Value: c.Token,
+		})
+	}
+
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
+		return nil, fmt.Errorf("authentication required for this endpoint")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
+	}
+
+	// Read the raw response.
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	var ex Examples
+	if err := json.Unmarshal(body, &ex); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return &ex, nil
+}

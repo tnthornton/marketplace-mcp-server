@@ -175,3 +175,60 @@ type User struct {
 	Email    string `json:"email"`
 	Name     string `json:"name,omitempty"`
 }
+
+// PackageType enumerates the valid types of Crossplane packages.
+type PackageType string
+
+// CRDMeta contains CustomResourceDefinition metadata.
+type CRDMeta struct {
+	Group          string   `json:"group"`
+	Kind           string   `json:"kind"`
+	Versions       []string `json:"versions"`
+	StorageVersion string   `json:"storageVersion"`
+	Scope          string   `json:"scope"`
+}
+
+// XRDMeta contains CompositeResourceDefinition metadata.
+type XRDMeta struct {
+	Group                string   `json:"group"`
+	Kind                 string   `json:"kind"`
+	Versions             []string `json:"versions"`
+	ReferenceableVersion string   `json:"referenceableVersion"`
+}
+
+// CompositionMeta contains Composition metadata.
+type CompositionMeta struct {
+	Name          string `json:"name"`
+	ResourceCount int    `json:"resourceCount"`
+	XrdAPIVersion string `json:"xrdApiVersion"`
+	XrdKind       string `json:"xrdKind"`
+}
+
+// PackageMeta contains package metadata.
+type PackageMeta struct {
+	Account       string              `json:"account"`
+	Repository    string              `json:"repository"`
+	RepoKey       string              `json:"repoKey"`
+	Name          string              `json:"name"`
+	PackageType   PackageType         `json:"packageType"`
+	Public        bool                `json:"public"`
+	Tier          string              `json:"tier"`
+	PkgDigest     string              `json:"pkgDigest"`
+	FamilyRepoKey *string             `json:"familyRepoKey,omitempty"`
+	FamilyCount   *uint               `json:"familyCount,omitempty"`
+	Highlights    map[string][]string `json:"highlight,omitempty"`
+}
+
+// PackageResources contains extended package metadata that includes the
+// resources in the package.
+type PackageResources struct {
+	PackageMeta  `json:",inline"`
+	CRDs         []CRDMeta         `json:"customResourceDefinitions"`
+	XRDs         []XRDMeta         `json:"compositeResourceDefinitions"`
+	Compositions []CompositionMeta `json:"compositions"`
+}
+
+// Examples return type for multiple examples
+type Examples struct {
+	Examples []string `json:"examples"`
+}

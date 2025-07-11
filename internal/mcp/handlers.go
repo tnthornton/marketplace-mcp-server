@@ -2,9 +2,12 @@ package mcp
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/pkg/errors"
+
 	"github.com/upbound/marketplace-mcp-server/internal/marketplace"
 )
 
@@ -150,6 +153,144 @@ func (s *Server) handleGetRepositories(ctx context.Context, req mcp.CallToolRequ
 	}
 
 	return mcp.NewToolResultText(formatRepositories(repos)), nil
+}
+
+// handleGetPackagesAccountRepositoryVersionResources handles the get_repositories tool
+func (s *Server) handleGetPackagesAccountRepositoryVersionResources(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	// Extract required parameters
+	account, err := req.RequireString("account")
+	if err != nil {
+		return mcp.NewToolResultError("account parameter is required"), nil
+	}
+	repositoryName, err := req.RequireString("repository_name")
+	if err != nil {
+		return mcp.NewToolResultError("repository_name parameter is required"), nil
+	}
+	version, err := req.RequireString("version")
+	if err != nil {
+		return mcp.NewToolResultError("version parameter is required"), nil
+	}
+
+	// Get repositories
+	repos, err := s.client.GetV1PackagesAccountRepositoryVersionResources(ctx, account, repositoryName, version)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("Failed to get repositories: %v", err)), nil
+	}
+
+	b, err := json.Marshal(repos)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not marshal response")
+	}
+
+	return mcp.NewToolResultText(string(b)), nil
+}
+
+// handleGetPackagesAccountRepositoryVersionResources handles the get_repositories tool
+func (s *Server) handleGetPackagesAccountRepositoryVersionResourcesGroupKindComposition(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	// Extract required parameters
+	account, err := req.RequireString("account")
+	if err != nil {
+		return mcp.NewToolResultError("account parameter is required"), nil
+	}
+	repositoryName, err := req.RequireString("repository_name")
+	if err != nil {
+		return mcp.NewToolResultError("repository_name parameter is required"), nil
+	}
+	version, err := req.RequireString("version")
+	if err != nil {
+		return mcp.NewToolResultError("version parameter is required"), nil
+	}
+	resourceGroup, err := req.RequireString("resource_group")
+	if err != nil {
+		return mcp.NewToolResultError("resource_group parameter is required"), nil
+	}
+	resourceKind, err := req.RequireString("resource_kind")
+	if err != nil {
+		return mcp.NewToolResultError("resource_kind parameter is required"), nil
+	}
+	compositionName, err := req.RequireString("composition_name")
+	if err != nil {
+		return mcp.NewToolResultError("composition_name parameter is required"), nil
+	}
+
+	// Get repositories
+	raw, err := s.client.GetV1PackagesAccountRepositoryVersionResourcesGroupKindComposition(ctx, account, repositoryName, version, resourceGroup, resourceKind, compositionName)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("Failed to get repositories: %v", err)), nil
+	}
+
+	return mcp.NewToolResultText(raw), nil
+}
+
+// handleGetPackagesAccountRepositoryVersionResourcesGroupKind handles the get_repositories tool
+func (s *Server) handleGetPackagesAccountRepositoryVersionResourcesGroupKind(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	// Extract required parameters
+	account, err := req.RequireString("account")
+	if err != nil {
+		return mcp.NewToolResultError("account parameter is required"), nil
+	}
+	repositoryName, err := req.RequireString("repository_name")
+	if err != nil {
+		return mcp.NewToolResultError("repository_name parameter is required"), nil
+	}
+	version, err := req.RequireString("version")
+	if err != nil {
+		return mcp.NewToolResultError("version parameter is required"), nil
+	}
+	resourceGroup, err := req.RequireString("resource_group")
+	if err != nil {
+		return mcp.NewToolResultError("resource_group parameter is required"), nil
+	}
+	resourceKind, err := req.RequireString("resource_kind")
+	if err != nil {
+		return mcp.NewToolResultError("resource_kind parameter is required"), nil
+	}
+
+	// Get repositories
+	raw, err := s.client.GetV1PackagesAccountRepositoryVersionResourcesGroupKind(ctx, account, repositoryName, version, resourceGroup, resourceKind)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("Failed to get repositories: %v", err)), nil
+	}
+
+	return mcp.NewToolResultText(raw), nil
+}
+
+// handleGetPackagesAccountRepositoryVersionResourcesGroupKind handles the get_repositories tool
+func (s *Server) handleGetPackagesAccountRepositoryVersionResourcesGroupKindExamples(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	// Extract required parameters
+	account, err := req.RequireString("account")
+	if err != nil {
+		return mcp.NewToolResultError("account parameter is required"), nil
+	}
+	repositoryName, err := req.RequireString("repository_name")
+	if err != nil {
+		return mcp.NewToolResultError("repository_name parameter is required"), nil
+	}
+	version, err := req.RequireString("version")
+	if err != nil {
+		return mcp.NewToolResultError("version parameter is required"), nil
+	}
+	resourceGroup, err := req.RequireString("resource_group")
+	if err != nil {
+		return mcp.NewToolResultError("resource_group parameter is required"), nil
+	}
+	resourceKind, err := req.RequireString("resource_kind")
+	if err != nil {
+		return mcp.NewToolResultError("resource_kind parameter is required"), nil
+	}
+
+	// Get repositories
+	exs, err := s.client.GetV1PackagesAccountRepositoryVersionResourcesGroupKindExamples(ctx, account, repositoryName, version, resourceGroup, resourceKind)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("Failed to get repositories: %v", err)), nil
+	}
+
+	b, err := json.Marshal(exs)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to marshal response")
+	}
+
+	return mcp.NewToolResultText(string(b)), nil
 }
 
 // handleReloadAuth handles the reload_auth tool
