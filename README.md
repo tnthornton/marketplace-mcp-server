@@ -2,13 +2,15 @@
 
 A Model Context Protocol (MCP) server that provides AI agents with access to the Upbound Marketplace API. This server enables agents to search, discover, and manage marketplace packages and repositories, with a focus on helping users leverage marketplace resources for Crossplane compositions and package management.
 
+Built using the [mcp-go](https://github.com/mark3labs/mcp-go) framework for robust MCP protocol compliance and performance.
+
 ## Features
 
 - **Package Search**: Search for packages across the Upbound Marketplace with advanced filtering
 - **Package Metadata**: Get detailed information about packages including CRDs, examples, and documentation
 - **Asset Access**: Retrieve package assets like CRDs, examples, docs, and package files
 - **Repository Management**: Browse and manage repositories
-- **Authentication**: OAuth-based authentication for accessing private resources
+- **Authentication**: UP CLI-based authentication for accessing private resources
 - **Multi-API Support**: Supports both v1 and v2 marketplace APIs
 - **Composition Focus**: Specialized tools for working with Crossplane compositions and functions
 
@@ -16,41 +18,22 @@ A Model Context Protocol (MCP) server that provides AI agents with access to the
 
 ### Using Docker (Recommended)
 
-Pull the pre-built image from the Upbound registry:
+Build the Docker image locally:
 
 ```bash
-docker pull xpkg.upbound.io/upbound/marketplace-mcp-server:latest
+git clone https://github.com/upbound/marketplace-mcp-server.git
+cd marketplace-mcp-server
+docker build --target stdio -t marketplace-mcp-server:latest .
 ```
+
+**Note**: You must have the UP CLI installed and authenticated for the server to access marketplace resources. Run `up login` before using the MCP server.
 
 ### Building from Source
 
-Standalone mode (stdio):
-
 ```bash
 git clone https://github.com/upbound/marketplace-mcp-server.git
 cd marketplace-mcp-server
-make build-server-local
-```
-
-With HTTP proxy:
-```bash
-git clone https://github.com/upbound/marketplace-mcp-server.git
-cd marketplace-mcp-server
-make build-proxy-local
-```
-
-### Building Docker Image
-
-Standalone mode (stdio):
-
-```bash
-make docker-build-stdio
-```
-
-With HTTP proxy:
-
-```bash
-make docker-build-http
+go build ./cmd/mcp-server
 ```
 
 ## Usage with AI Agents
@@ -69,23 +52,60 @@ Add the following to your Claude Desktop configuration file:
       "command": "docker",
       "args": [
         "run",
-        "-i",
+        "--name", "mcp-marketplace",
         "--rm",
-        "-p", "8765:8765",
-        "xpkg.upbound.io/upbound/marketplace-mcp-server:latest"
+        "-i",
+        "-v", "/Users/your-username/.up:/mcp/.up:ro",
+        "marketplace-mcp-server:latest"
       ]
     }
   }
 }
 ```
 
+**Important**: Replace `/Users/your-username/.up` with your actual UP CLI config directory path:
+- **macOS/Linux**: `~/.up` (typically `/Users/username/.up` or `/home/username/.up`)
+- **Windows**: `%USERPROFILE%\.up`
+
 ### Other MCP-Compatible Agents
 
 For agents that support MCP, configure them to connect to the server using stdio transport:
 
 ```bash
-./marketplace-mcp-server
+# Using the built binary
+./mcp-server
+
+# Using Docker
+docker run -i --rm -v ~/.up:/mcp/.up:ro marketplace-mcp-server:latest
 ```
+
+### HTTP API Interface
+
+The server also supports HTTP transport for integration with web applications and REST clients:
+
+```bash
+# Start HTTP server locally
+./mcp-http
+
+# Or using Docker
+docker run --rm -p 8765:8765 -v ~/.up:/mcp/.up:ro marketplace-mcp-server-http:latest
+```
+
+The HTTP server provides a JSON-RPC 2.0 API at `http://localhost:8765/mcp`. Example usage:
+
+```bash
+# List available tools
+curl -X POST http://localhost:8765/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}'
+
+# Search for packages
+curl -X POST http://localhost:8765/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "search_packages", "arguments": {"query": "aws", "size": 5}}}'
+```
+
+The HTTP interface operates in stateless mode, so no session initialization is required.
 
 ## Available Tools
 
@@ -140,13 +160,13 @@ Get detailed metadata for a specific package.
 
 ### 3. get_package_assets
 
-Get assets (CRDs, examples, docs) for a specific package version.
+Get assets (documentation, icons, release notes, etc.) for a specific package version.
 
 **Parameters:**
 - `account` (string, required): Account/organization name
 - `repository` (string, required): Repository name
 - `version` (string, required): Package version or 'latest'
-- `asset_type` (string, required): Type of asset (crds, examples, docs, package)
+- `asset_type` (string, required): Type of asset (docs, icon, readme, releaseNotes, sbom)
 
 **Example:**
 ```json
@@ -156,7 +176,7 @@ Get assets (CRDs, examples, docs) for a specific package version.
     "account": "upbound",
     "repository": "provider-aws",
     "version": "latest",
-    "asset_type": "examples"
+    "asset_type": "docs"
   }
 }
 ```
@@ -183,34 +203,44 @@ Get repositories for an account.
 }
 ```
 
-### 5. authenticate
+### 5. reload_auth
 
-Authenticate with Upbound to access private resources.
+Reload authentication from UP CLI configuration. Useful when switching UP CLI profiles.
 
 **Parameters:**
-- `client_id` (string): OAuth client ID (optional, uses default if not provided)
-- `scopes` (array): OAuth scopes to request (default: ["read:packages", "read:repositories"])
+- No parameters required
 
 **Example:**
 ```json
 {
-  "name": "authenticate",
-  "arguments": {
-    "scopes": ["read:packages", "read:repositories", "write:packages"]
-  }
+  "name": "reload_auth",
+  "arguments": {}
 }
 ```
 
 ## Authentication
 
-For accessing private repositories or performing write operations, you'll need to authenticate:
+The MCP server uses UP CLI authentication for accessing marketplace resources:
 
-1. Use the `authenticate` tool in your agent
-2. A browser window will open for OAuth login
-3. Complete the login process
-4. The server will cache your token for subsequent requests
+### Prerequisites
+1. Install the UP CLI: https://docs.upbound.io/cli/
+2. Authenticate with your Upbound account: `up login`
+3. Ensure your UP CLI config is accessible to the Docker container
 
-The authentication uses OAuth 2.0 with PKCE for security.
+### Docker Configuration
+The server automatically loads authentication from your UP CLI configuration when the container starts. Make sure to mount your UP CLI config directory:
+
+```bash
+-v ~/.up:/mcp/.up:ro
+```
+
+### Switching Profiles
+If you have multiple UP CLI profiles, you can:
+1. Switch profiles using `up profile use <profile-name>`
+2. Use the `reload_auth` tool to reload the new authentication without restarting the server
+
+### Private Resources
+The server will automatically use your authenticated session to access private repositories and resources that your account has permission to view.
 
 ## API Filtering (v2)
 
@@ -264,37 +294,43 @@ Analyze package dependencies and compatibility:
 ### 4. Repository Management
 Browse and manage organization repositories:
 ```
-1. Authenticate with your account
+1. Ensure UP CLI is authenticated (up login)
 2. List repositories with filtering
 3. Get detailed repository information
 ```
 
-## Environment Variables
+## Configuration
 
-- `MARKETPLACE_BASE_URL`: Override the default marketplace URL (default: https://registry.upbound.io)
-- `OAUTH_CLIENT_ID`: Default OAuth client ID
-- `OAUTH_CLIENT_SECRET`: OAuth client secret (if required)
+The server automatically detects and loads UP CLI configuration from the following locations:
+1. `/mcp/.up/config.json` (when running in Docker with mounted config)
+2. `~/.up/config.json` (default UP CLI location)
+
+No additional configuration is required if UP CLI is properly set up and authenticated.
 
 ## Development
 
 ### Prerequisites
-- Go 1.21 or later
+- Go 1.23 or later (required by mcp-go framework)
 - Docker (for containerization)
 
 ### Running Locally
 
-Docker is recommended for portability.
-
-If you built for standalone mode (stdio):
-
+**Stdio Transport (for MCP clients like Cursor):**
 ```bash
-make docker-run-local
+# Run the built binary directly
+./mcp-server
+
+# Or run with Docker
+docker run -i --rm -v ~/.up:/mcp/.up:ro marketplace-mcp-server:latest
 ```
 
-If you built for HTTP:
-
+**HTTP Transport (for web applications and REST clients):**
 ```bash
-make docker-run-proxy
+# Run the HTTP server
+./mcp-http
+
+# Or run with Docker
+docker run --rm -p 8765:8765 -v ~/.up:/mcp/.up:ro marketplace-mcp-server-http:latest
 ```
 
 ### Testing
@@ -303,21 +339,21 @@ go test ./...
 ```
 
 
-## Docker Registry
+## Architecture
 
-The Docker image is available at:
-```
-xpkg.upbound.io/upbound/marketplace-mcp-server:latest
-```
+The server is built using the [mcp-go](https://github.com/mark3labs/mcp-go) framework, which provides:
+- **JSON-RPC 2.0 Compliance**: Full adherence to MCP protocol specifications
+- **Multiple Transports**: Built-in support for stdio, HTTP, and SSE transports
+- **Type Safety**: Strongly typed request/response handling
+- **Middleware Support**: Extensible architecture for authentication and logging
+- **Error Handling**: Robust error handling with proper MCP error codes
 
-### Pushing to Registry
+### Key Components
 
-# Tag for registry
-docker tag marketplace-mcp-server xpkg.upbound.io/upbound/marketplace-mcp-server:latest
-
-# Push to registry
-docker push xpkg.upbound.io/upbound/marketplace-mcp-server:latest
-```
+- **Server**: Main MCP server using mcp-go framework
+- **Handlers**: Tool handlers for marketplace operations
+- **Auth Manager**: UP CLI authentication integration
+- **Marketplace Client**: HTTP client for Upbound Marketplace API
 
 ## Contributing
 
@@ -351,15 +387,15 @@ For issues and questions:
 }
 ```
 
-### Getting Composition Examples
+### Getting Package Documentation
 ```json
 {
   "name": "get_package_assets",
   "arguments": {
     "account": "upbound",
-    "repository": "configuration-aws-eks",
+    "repository": "provider-aws",
     "version": "latest",
-    "asset_type": "examples"
+    "asset_type": "docs"
   }
 }
 ```
